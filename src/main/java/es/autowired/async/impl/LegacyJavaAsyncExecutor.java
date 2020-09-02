@@ -4,6 +4,7 @@ import static es.autowired.common.CommonHelper.log;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.List;
 
 import es.autowired.async.AsyncExecutor;
 import es.autowired.service.ServiceImpl;
@@ -70,51 +71,62 @@ public class LegacyJavaAsyncExecutor implements AsyncExecutor {
 
 
     /**
-     * Executes lines in 'run' asynchronously
+     * Executes method (parameter 'method') of the class 'clase' with params asynchronously
      *
-     * @param params parameters
+     * @param method - Method to execute
+     * @param params - Method parameters
      */
     @Override
-    public void executeAsyncStatic(Object... params) {
-        log("[START] (" + params + ")", this.getClass());
+    public void executeAsyncStatic(Method method, Object... params) {
+        log("[START] (" + method + ", " + params + ")", this.getClass());
         new Thread(new Runnable() {
             @Override
             public void run() {
-                for (Object param : params){
-                    if(param instanceof String)
-                        log("[RESULT] ("+ ServiceImpl.getLength((String) param) + ")", this.getClass());
+                try {
+                    Object invoke = method.invoke(null, params);
+                    log("[RESULT] (" + invoke + ")", this.getClass());
+                } catch (IllegalAccessException e) {
+                    log("ERROR\t" + e.getMessage(), LegacyJavaAsyncExecutor.this.getClass());
+                } catch (InvocationTargetException e) {
+                    log("ERROR\t" + e.getMessage(), LegacyJavaAsyncExecutor.this.getClass());
                 }
             }
         }).start();
 
-        log("[END] (" + params + ")", this.getClass());
+        log("[END] (" + method + ", " + params + ")", this.getClass());
     }
 
 
     /**
      * Executes method (parameter 'method') of the class 'clase' with params asynchronously
      *
-     * @param clase  - Class of the method to execute
+     * @param clazz      - Class of the method to execute
      * @param methodName - Method to execute
-     * @param params - Method parameters
+     * @param params     - Method parameters
      */
     @Override
-    public void executeAsyncStaticWithMethod(String clase, String methodName, Object paramClass, Object... params) {
-        log("[START] (" + clase + methodName + ", " + paramClass + ", " + params + ")", this.getClass());
+    public void executeAsyncStaticWithMethodName(String clazz, String methodName, List<Object> paramClass, Object... params) {
+        log("[START] (" + clazz + ", " + methodName + ", " + paramClass + ", " + params + ")", this.getClass());
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    Method method = Class.forName(clase).getMethod(methodName, (Class<?>) paramClass);
+                    Method method = Class.forName(clazz).getMethod(methodName, paramClass.toArray(new Class<?>[paramClass.size()]));
                     Object invoke = method.invoke(null, params);
                     log("[RESULT] (" + invoke + ")", this.getClass());
-                } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | ClassNotFoundException e) {
+                } catch (NoSuchMethodException e) {
+                    log("ERROR\t" + e.getMessage(), LegacyJavaAsyncExecutor.this.getClass());
+                } catch (IllegalAccessException e) {
+                    log("ERROR\t" + e.getMessage(), LegacyJavaAsyncExecutor.this.getClass());
+                } catch (InvocationTargetException e) {
+                    log("ERROR\t" + e.getMessage(), LegacyJavaAsyncExecutor.this.getClass());
+                } catch (ClassNotFoundException e) {
                     log("ERROR\t" + e.getMessage(), LegacyJavaAsyncExecutor.this.getClass());
                 }
             }
         }).start();
 
-        log("[END] (" + clase + methodName + ", " + paramClass + ", " + params + ")", this.getClass());
+        log("[END] (" + clazz + methodName + ", " + paramClass + ", " + params + ")", this.getClass());
     }
 
     /**

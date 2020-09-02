@@ -3,6 +3,7 @@ package es.autowired.service;
 
 import static es.autowired.common.CommonHelper.log;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -55,7 +56,7 @@ public class ServiceImpl implements Service {
         }
     }
 
-    public static String getLength(String cadena) {
+    public static String getLength(Integer a, String cadena) {
         return cadena.concat(SEPARATOR).concat(String.valueOf(cadena.length()));
     }
 
@@ -107,14 +108,24 @@ public class ServiceImpl implements Service {
                 log("Fin de las llamadas SOAP...", this.getClass());
             case 2:
                 log("Realizando peticiones estaticas...", this.getClass());
-                for (String contrato : contratosImprimir)
-                    this.asyncExecutor.executeAsyncStatic(contrato);
+                for (String contrato : contratosImprimir) {
+                    try {
+                        this.asyncExecutor.executeAsyncStatic(ServiceImpl.class.getMethod("getLength", Integer.class, String.class), null, contrato);
+                    } catch (NoSuchMethodException e) {
+                        logException(e);
+                    }
+                }
                 log("Peticiones estaticas lanzadas...", this.getClass());
                 break;
             case 3:
                 log("Realizando peticiones estaticas con nombre de metodo...", this.getClass());
-                for (String contrato : contratosImprimir)
-                    this.asyncExecutor.executeAsyncStaticWithMethod("es.autowired.service.ServiceImpl", "getLength", String.class, contrato);
+                List<Object> parameterTypes = new ArrayList<>();
+                parameterTypes.add(Integer.class);
+                parameterTypes.add(String.class);
+                for (String contrato : contratosImprimir){
+                    this.asyncExecutor.executeAsyncStaticWithMethodName("es.autowired.service.ServiceImpl", "getLength", parameterTypes,null, contrato);
+                }
+
                 log("Peticiones estaticas con nombre de metodo lanzadas...", this.getClass());
                 break;
         }
