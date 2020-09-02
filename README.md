@@ -4,6 +4,9 @@ Working with Java Threads. Simple example of async executions of methos in a old
 
 In this example I will not use any framework nor external library, only plain java in order to maximize the compatibility.
 
+# Master status
+[![Build Status](https://travis-ci.com/jamataran/vf-async.svg?branch=master)](https://travis-ci.com/jamataran/vf-async)
+
 # Contents
 
 ## `es.autowired.async`
