@@ -17,7 +17,7 @@ public class Main {
         Service service = new ServiceImpl(asyncExecutor);
 
         for (int i = 0; i < NUMERO_EJECUCIONES; i++) {
-            service.mainLogic();
+            service.mainLogic(3);
         }
 
     }

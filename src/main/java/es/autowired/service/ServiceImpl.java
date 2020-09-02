@@ -5,11 +5,8 @@ import static es.autowired.common.CommonHelper.log;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 import es.autowired.async.AsyncExecutor;
-import es.autowired.async.impl.LegacyJavaAsyncExecutor;
 
 /**
  * Simulates business logic.
@@ -18,6 +15,7 @@ public class ServiceImpl implements Service {
 
     public static final int RETARDO_FTP = 12000;
     public static final int RETARDO_SOAP = 1200;
+    private static final String SEPARATOR = " - ";
     private final AsyncExecutor asyncExecutor;
     public static final int NUMERO_CONTRATOS = 5;
 
@@ -57,8 +55,25 @@ public class ServiceImpl implements Service {
         }
     }
 
+    public static String getLength(String cadena) {
+        return cadena.concat(SEPARATOR).concat(String.valueOf(cadena.length()));
+    }
+
+
+    /**
+     * El método principal será el encargado de llamar, dependiendo del tipo de llamada, a la
+     * invocación asincrona correspondiente:
+     * <p>
+     * 1 -- Invocará al método executeAsyncNonStatic
+     * <p>
+     * 2 -- Invocará al método executeAsyncStatic
+     * <p>
+     * 3 -- Invocará al método executeAsyncStaticWithMethod
+     *
+     * @param callType
+     */
     @Override
-    public void mainLogic() {
+    public void mainLogic(int callType) {
         log("Iniciando lógica principal....", this.getClass());
         log("Gerando contratos....", this.getClass());
         List<String> contratosImprimir = new LinkedList<>();
@@ -68,27 +83,43 @@ public class ServiceImpl implements Service {
         }
         log("Contratos generados!", this.getClass());
         log("El resto de opciones se lanzarán de forma asíncrona", this.getClass());
-        log("Realizando peticiones FTP...", this.getClass());
-        for (String contrato : contratosImprimir) {
-            try {
-                this.asyncExecutor.executeAsyncNonStatic(Thread.currentThread(), this, ServiceImpl.class.getMethod("sendFTP", String.class), contrato);
-            } catch (NoSuchMethodException e) {
-                logException(e);
-            }
+
+
+        switch (callType) {
+            case 1:
+                log("Realizando peticiones FTP...", this.getClass());
+                for (String contrato : contratosImprimir) {
+                    try {
+                        this.asyncExecutor.executeAsyncNonStatic(Thread.currentThread(), this, ServiceImpl.class.getMethod("sendFTP", String.class), contrato);
+                    } catch (NoSuchMethodException e) {
+                        logException(e);
+                    }
+                }
+                log("Peticiones FTP lanzadas...", this.getClass());
+                log("Realizando llamadas SOAP...", this.getClass());
+                for (String contrato : contratosImprimir) {
+                    try {
+                        this.asyncExecutor.executeAsyncNonStatic(Thread.currentThread(), this, ServiceImpl.class.getMethod("callSOAPService", String.class), "https://ws-soap/upload/".concat(contrato));
+                    } catch (NoSuchMethodException e) {
+                        logException(e);
+                    }
+                }
+                log("Fin de las llamadas SOAP...", this.getClass());
+            case 2:
+                log("Realizando peticiones estaticas...", this.getClass());
+                for (String contrato : contratosImprimir)
+                    this.asyncExecutor.executeAsyncStatic(contrato);
+                log("Peticiones estaticas lanzadas...", this.getClass());
+                break;
+            case 3:
+                log("Realizando peticiones estaticas con nombre de metodo...", this.getClass());
+                for (String contrato : contratosImprimir)
+                    this.asyncExecutor.executeAsyncStaticWithMethod("es.autowired.service.ServiceImpl", "getLength", String.class, contrato);
+                log("Peticiones estaticas con nombre de metodo lanzadas...", this.getClass());
+                break;
         }
-        log("Peticiones FTP lanzadas...", this.getClass());
-        log("Realizando llamadas SOAP...", this.getClass());
-        for (String contrato : contratosImprimir) {
-            try {
-                this.asyncExecutor.executeAsyncNonStatic(Thread.currentThread(), this, ServiceImpl.class.getMethod("callSOAPService", String.class), "https://ws-soap/upload/".concat(contrato));
-            } catch (NoSuchMethodException e) {
-                logException(e);
-            }
-        }
-        log("Fin de las llamadas SOAP...", this.getClass());
+
         log("\uD83C\uDF89 Fin del proceso. Hilo principal disponible de nuevo!", this.getClass());
-
-
     }
 
     private void logException(Exception e) {

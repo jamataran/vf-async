@@ -8,6 +8,6 @@ public interface Service {
 
     void callSOAPService(String url);
 
-    void mainLogic();
+    void mainLogic(int callType);
 
 }

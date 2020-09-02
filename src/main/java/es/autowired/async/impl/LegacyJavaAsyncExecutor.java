@@ -6,6 +6,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import es.autowired.async.AsyncExecutor;
+import es.autowired.service.ServiceImpl;
 
 /**
  * Executes {@link Method} asynchronously
@@ -65,6 +66,55 @@ public class LegacyJavaAsyncExecutor implements AsyncExecutor {
         }).start();
 
         log("[END] (" + parentThread + ", " + method + ", " + params + ")", this.getClass());
+    }
+
+
+    /**
+     * Executes lines in 'run' asynchronously
+     *
+     * @param params parameters
+     */
+    @Override
+    public void executeAsyncStatic(Object... params) {
+        log("[START] (" + params + ")", this.getClass());
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for (Object param : params){
+                    if(param instanceof String)
+                        log("[RESULT] ("+ ServiceImpl.getLength((String) param) + ")", this.getClass());
+                }
+            }
+        }).start();
+
+        log("[END] (" + params + ")", this.getClass());
+    }
+
+
+    /**
+     * Executes method (parameter 'method') of the class 'clase' with params asynchronously
+     *
+     * @param clase  - Class of the method to execute
+     * @param methodName - Method to execute
+     * @param params - Method parameters
+     */
+    @Override
+    public void executeAsyncStaticWithMethod(String clase, String methodName, Object paramClass, Object... params) {
+        log("[START] (" + clase + methodName + ", " + paramClass + ", " + params + ")", this.getClass());
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Method method = Class.forName(clase).getMethod(methodName, (Class<?>) paramClass);
+                    Object invoke = method.invoke(null, params);
+                    log("[RESULT] (" + invoke + ")", this.getClass());
+                } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | ClassNotFoundException e) {
+                    log("ERROR\t" + e.getMessage(), LegacyJavaAsyncExecutor.this.getClass());
+                }
+            }
+        }).start();
+
+        log("[END] (" + clase + methodName + ", " + paramClass + ", " + params + ")", this.getClass());
     }
 
     /**
