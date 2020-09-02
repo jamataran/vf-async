@@ -4,8 +4,10 @@ import java.util.Optional;
 
 public interface Service {
 
-    Optional<String> retard(int retard);
+    void sendFTP(String fileName);
 
-    Optional<String> retard2(int retard);
+    void callSOAPService(String url);
+
+    void mainLogic();
 
 }

@@ -8,7 +8,7 @@ public class CommonHelper {
     private static final String LOG_SEPARATOR = "\t";
 
     public synchronized static void log(String message, Class clazz) {
-        StringBuilder finalMessage = new StringBuilder("[INFO]");
+        StringBuilder finalMessage = new StringBuilder(message.startsWith("ERROR") ? "[ERROR]" : "[INFO]");
         finalMessage.append(LOG_SEPARATOR);
         final String format = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss.SSS'Z'").format(new Date());
         finalMessage.append(format);
