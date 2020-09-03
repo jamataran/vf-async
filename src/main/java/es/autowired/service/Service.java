@@ -1,7 +1,5 @@
 package es.autowired.service;
 
-import java.util.Optional;
-
 public interface Service {
 
     void sendFTP(String fileName);

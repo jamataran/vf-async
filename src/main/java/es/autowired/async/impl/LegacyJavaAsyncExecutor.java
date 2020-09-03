@@ -7,7 +7,6 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import es.autowired.async.AsyncExecutor;
-import es.autowired.service.ServiceImpl;
 
 /**
  * Executes {@link Method} asynchronously
