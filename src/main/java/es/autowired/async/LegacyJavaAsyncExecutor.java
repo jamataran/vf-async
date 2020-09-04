@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 import es.autowired.common.CommonHelper;
-import es.autowired.provider.arch.exception.LegacyJavaAsyncException;
+import es.autowired.async.exception.LegacyJavaAsyncException;
 
 public class LegacyJavaAsyncExecutor implements AsyncExecutor {
 
@@ -25,8 +25,10 @@ public class LegacyJavaAsyncExecutor implements AsyncExecutor {
             public void run() {
                 try {
                     method.invoke(o, params);
+
                 } catch (IllegalAccessException e) {
                     throw new LegacyJavaAsyncException(e, parentThread, Thread.currentThread());
+
                 } catch (InvocationTargetException e) {
                     throw new LegacyJavaAsyncException(e, parentThread, Thread.currentThread());
                 }
@@ -40,12 +42,10 @@ public class LegacyJavaAsyncExecutor implements AsyncExecutor {
         this.executeAsync(parentThread, this, method, params);
     }
 
-    @Override
     public void executeAsyncStatic(final Method method, final Object... params) {
         log("[START] (" + method + ", " + params + ")", this.getClass());
         final Thread parentThread = Thread.currentThread();
         new Thread(new Runnable() {
-            @Override
             public void run() {
                 try {
                     Object invoke = method.invoke(null, params);
@@ -61,23 +61,26 @@ public class LegacyJavaAsyncExecutor implements AsyncExecutor {
         log("[END] (" + method + ", " + params + ")", this.getClass());
     }
 
-    @Override
-    public void executeAsyncStatic(final String clazz, final String methodName, final List<Object> paramClass, final Object... params) {
+
+    public void executeAsyncStatic(final String clazz, final String methodName, final List<Class> paramClass, final Object... params) {
         log("[START] (" + clazz + ", " + methodName + ", " + paramClass + ", " + params + ")", this.getClass());
         final Thread parentThread = Thread.currentThread();
         new Thread(new Runnable() {
-            @Override
             public void run() {
                 try {
                     Method method = Class.forName(clazz).getMethod(methodName, paramClass.toArray(new Class<?>[paramClass.size()]));
                     Object invoke = method.invoke(null, params);
                     log("[RESULT] (" + invoke + ")", this.getClass());
+
                 } catch (NoSuchMethodException e) {
                     throw new LegacyJavaAsyncException(e, parentThread, Thread.currentThread());
+
                 } catch (IllegalAccessException e) {
                     throw new LegacyJavaAsyncException(e, parentThread, Thread.currentThread());
+
                 } catch (InvocationTargetException e) {
                     throw new LegacyJavaAsyncException(e, parentThread, Thread.currentThread());
+
                 } catch (ClassNotFoundException e) {
                     throw new LegacyJavaAsyncException(e, parentThread, Thread.currentThread());
                 }
