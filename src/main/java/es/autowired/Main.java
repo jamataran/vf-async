@@ -15,7 +15,7 @@ public class Main {
     public static void main(String[] args) throws NoSuchMethodException {
         CommonHelper.log("Inicio proceso PRINCIPAL", null);
 
-        AsyncExecutor asyncExecutor = new LegacyJavaAsyncExecutor();
+        AsyncExecutor asyncExecutor = LegacyJavaAsyncExecutor.getInstance();
         Service service = new ServiceImpl();
         List<Object> paramTypes = new ArrayList<Object>();
         paramTypes.add(int.class);

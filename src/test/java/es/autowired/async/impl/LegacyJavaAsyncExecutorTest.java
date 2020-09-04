@@ -17,7 +17,7 @@ public class LegacyJavaAsyncExecutorTest {
     private static final String GET_LENGTH_METHOD = "getLength";
     private static final String STRING_CLASS = "java.lang.String";
 
-    private final AsyncExecutor asyncExecutor = new LegacyJavaAsyncExecutor();
+    private final AsyncExecutor asyncExecutor = LegacyJavaAsyncExecutor.getInstance();
 
     @Test
     public void executeAsyncNonStatic() throws NoSuchMethodException {
