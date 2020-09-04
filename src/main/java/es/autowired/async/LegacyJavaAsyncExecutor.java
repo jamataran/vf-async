@@ -11,6 +11,9 @@ import java.util.Set;
 import es.autowired.common.CommonHelper;
 import es.autowired.async.exception.LegacyJavaAsyncException;
 
+/**
+ * Old-fashioned java version compatible implementation of {@link AsyncExecutor}
+ */
 public class LegacyJavaAsyncExecutor implements AsyncExecutor {
 
     private final Set<Thread> threads;

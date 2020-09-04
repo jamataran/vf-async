@@ -3,6 +3,9 @@ package es.autowired.async;
 import java.lang.reflect.Method;
 import java.util.List;
 
+/**
+ * The API {@link AsyncExecutor} provides several features intended to execute methods in
+ */
 public interface AsyncExecutor {
 
     void executeAsync(final Thread parentThread, final Object o, final Method method, final Object... params);

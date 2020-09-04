@@ -20,7 +20,11 @@ public class Main {
         List<Object> paramTypes = new ArrayList<Object>();
         paramTypes.add(int.class);
         for (int i = 0; i <= 5; i++) {
-            asyncExecutor.executeAsync(Thread.currentThread(), service, ServiceImpl.class.getMethod("retard", int.class), i * 10000);
+            final int paramInteger = i * 10000;
+            asyncExecutor.executeAsync(Thread.currentThread(),
+                    service,
+                    ServiceImpl.class.getMethod("retard", int.class),
+                    paramInteger);
         }
 
         CommonHelper.log("Fin del Proceso Principal", null);
