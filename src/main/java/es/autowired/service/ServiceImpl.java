@@ -17,7 +17,7 @@ public class ServiceImpl implements Service {
             Service nextInstance = new ServiceImpl();
             AsyncExecutor asyncExecutor = new LegacyJavaAsyncExecutor();
             try {
-                asyncExecutor.executeAync(Thread.currentThread(), nextInstance, ServiceImpl.class.getMethod("retard2", int.class), retard);
+                asyncExecutor.executeAsync(Thread.currentThread(), nextInstance, ServiceImpl.class.getMethod("retard2", int.class), retard);
             } catch (NoSuchMethodException e) {
                 e.printStackTrace();
             }

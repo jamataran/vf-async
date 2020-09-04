@@ -1,24 +1,30 @@
+
 package es.autowired;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import es.autowired.async.AsyncExecutor;
-import es.autowired.async.impl.LegacyJavaAsyncExecutor;
+import es.autowired.async.LegacyJavaAsyncExecutor;
+import es.autowired.common.CommonHelper;
 import es.autowired.service.Service;
 import es.autowired.service.ServiceImpl;
 
 public class Main {
 
+    public static void main(String[] args) throws NoSuchMethodException {
+        CommonHelper.log("Inicio proceso PRINCIPAL", null);
 
-    public static final int NUMERO_EJECUCIONES = 5;
-
-    public static void main(String[] args) {
-
-        // Example
-        AsyncExecutor asyncExecutor = LegacyJavaAsyncExecutor.getInstance();
-        Service service = new ServiceImpl(asyncExecutor);
-
-        for (int i = 0; i < NUMERO_EJECUCIONES; i++) {
-            service.mainLogic(3);
+        AsyncExecutor asyncExecutor = new LegacyJavaAsyncExecutor();
+        Service service = new ServiceImpl();
+        List<Object> paramTypes = new ArrayList<Object>();
+        paramTypes.add(int.class);
+        for (int i = 0; i <= 5; i++) {
+            asyncExecutor.executeAsyncStatic("java.long.String", "valueOf", paramTypes, 1);
+            //asyncExecutor.executeAsync(Thread.currentThread(), service, ServiceImpl.class.getMethod("retard", int.class), i*10000);
         }
+
+        CommonHelper.log("Fin del Proceso Principal", null);
 
     }
 
