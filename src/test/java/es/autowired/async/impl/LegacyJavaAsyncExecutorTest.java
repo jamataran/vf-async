@@ -9,6 +9,7 @@ import org.junit.Test;
 import es.autowired.async.AsyncExecutor;
 import es.autowired.async.LegacyJavaAsyncExecutor;
 
+@SuppressWarnings("DefaultAnnotationParam")
 public class LegacyJavaAsyncExecutorTest {
 
     private static final int EXAMPLE_INT = 1;
@@ -19,20 +20,20 @@ public class LegacyJavaAsyncExecutorTest {
 
     private final AsyncExecutor asyncExecutor = LegacyJavaAsyncExecutor.getInstance();
 
-    @Test
+    @Test(expected = Test.None.class)
     public void executeAsyncNonStatic() throws NoSuchMethodException {
         Method getLength = LegacyJavaAsyncExecutorTest.class.getMethod(GET_LENGTH_METHOD, String.class);
         asyncExecutor.executeAsync(Thread.currentThread(), this, getLength, EXAMPLE_STRING);
 
     }
 
-    @Test
+    @Test(expected = Test.None.class)
     public void executeAsyncStatic() throws NoSuchMethodException {
         Method trimWhitespace = String.class.getMethod(STATIC_METHOD, int.class);
         asyncExecutor.executeAsyncStatic(trimWhitespace, EXAMPLE_INT);
     }
 
-    @Test
+    @Test(expected = Test.None.class)
     public void executeAsyncStaticWithMethodName() {
         List<Class> paramTypes = new ArrayList<Class>();
         paramTypes.add(int.class);
@@ -40,11 +41,9 @@ public class LegacyJavaAsyncExecutorTest {
         asyncExecutor.executeAsyncStatic(STRING_CLASS, STATIC_METHOD, paramTypes, EXAMPLE_INT);
     }
 
-    @Test
+    @Test(expected = Test.None.class)
     public void executeAsyncNonStaticWithoutObject() throws NoSuchMethodException {
-        Method getLength = LegacyJavaAsyncExecutorTest.class.getMethod(GET_LENGTH_METHOD, String.class);
-        asyncExecutor.executeAsync(Thread.currentThread(), getLength, EXAMPLE_STRING);
-
+        asyncExecutor.executeAsync(Thread.currentThread(), String.class.getMethod("getBytes"), null);
     }
 
     public String getLength(String cadena) {

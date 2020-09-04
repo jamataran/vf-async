@@ -10,7 +10,7 @@ public interface AsyncExecutor {
 
     void executeAsync(final Thread parentThread, final Object o, final Method method, final Object... params);
 
-    void executeAsync(final Thread parentThread, final Method method, final Object... params);
+    void executeAsync(final Thread parentThread, final Method method, final Object... params) throws NoSuchMethodException;
 
     void executeAsyncStatic(final Method method, final Object... params);
 

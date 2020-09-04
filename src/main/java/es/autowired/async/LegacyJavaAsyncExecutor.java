@@ -4,12 +4,11 @@ import static es.autowired.common.CommonHelper.log;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashSet;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
-import es.autowired.common.CommonHelper;
 import es.autowired.async.exception.LegacyJavaAsyncException;
+import es.autowired.common.CommonHelper;
 
 /**
  * Old-fashioned java version compatible implementation of {@link AsyncExecutor}
@@ -48,7 +47,7 @@ public class LegacyJavaAsyncExecutor implements AsyncExecutor {
      * @param params       Params to execute the method
      */
     public void executeAsync(final Thread parentThread, final Object o, final Method method, final Object... params) {
-        CommonHelper.log("[START] (" + parentThread + ", " + method + ", " + params + ")", this.getClass());
+        CommonHelper.log("[START] (" + parentThread + ", " + method + ", " + Arrays.toString(params) + ")", this.getClass());
         new Thread(new Runnable() {
             public void run() {
                 try {
@@ -58,13 +57,15 @@ public class LegacyJavaAsyncExecutor implements AsyncExecutor {
                     throw new LegacyJavaAsyncException(e, parentThread, Thread.currentThread());
 
                 } catch (InvocationTargetException e) {
-                    throw new LegacyJavaAsyncException(e, parentThread, Thread.currentThread());
+                    handleThreadExcpetion(parentThread, e);
+                    return;
                 }
             }
         }).start();
 
-        CommonHelper.log("[END] (" + parentThread + ", " + method + ", " + params + ")", this.getClass());
+        CommonHelper.log("[END] (" + parentThread + ", " + method + ", " + Arrays.toString(params) + ")", this.getClass());
     }
+
 
     /**
      * Execute asynchronously the method received by parameter
@@ -73,8 +74,22 @@ public class LegacyJavaAsyncExecutor implements AsyncExecutor {
      * @param method       Method to execute
      * @param params       Params to execute the method
      */
-    public void executeAsync(Thread parentThread, Method method, Object... params) {
-        this.executeAsync(parentThread, this, method, params);
+    public void executeAsync(Thread parentThread, Method method, Object... params) throws NoSuchMethodException {
+        final Class<?> declaringClass = method.getDeclaringClass();
+        try {
+            final Object instance = declaringClass.getDeclaredConstructor().newInstance();
+            this.executeAsync(parentThread, instance, method, params);
+
+        } catch (InstantiationException e) {
+            handleThreadExcpetion(parentThread, e);
+
+        } catch (IllegalAccessException e) {
+            handleThreadExcpetion(parentThread, e);
+
+        } catch (InvocationTargetException e) {
+            handleThreadExcpetion(parentThread, e);
+        }
+
     }
 
     /**
@@ -84,22 +99,21 @@ public class LegacyJavaAsyncExecutor implements AsyncExecutor {
      * @param params Params to execute the method
      */
     public void executeAsyncStatic(final Method method, final Object... params) {
-        log("[START] (" + method + ", " + params + ")", this.getClass());
+        log("[START] (" + method + ", " + Arrays.toString(params) + ")", this.getClass());
         final Thread parentThread = Thread.currentThread();
         new Thread(new Runnable() {
             public void run() {
                 try {
-                    Object invoke = method.invoke(null, params);
-                    log("[RESULT] (" + invoke + ")", this.getClass());
+                    method.invoke(null, params);
                 } catch (IllegalAccessException e) {
                     throw new LegacyJavaAsyncException(e, parentThread, Thread.currentThread());
                 } catch (InvocationTargetException e) {
-                    throw new LegacyJavaAsyncException(e, parentThread, Thread.currentThread());
+                    handleThreadExcpetion(parentThread, e);
                 }
             }
         }).start();
 
-        log("[END] (" + method + ", " + params + ")", this.getClass());
+        log("[END] (" + method + ", " + Arrays.toString(params) + ")", this.getClass());
     }
 
     /**
@@ -110,15 +124,14 @@ public class LegacyJavaAsyncExecutor implements AsyncExecutor {
      * @param paramClass Params type of the method
      * @param params     Params to execute the method
      */
-    public void executeAsyncStatic(final String clazz, final String methodName, final List<Class> paramClass, final Object... params) {
+    public void executeAsyncStatic(final String clazz, final String methodName, @SuppressWarnings("rawtypes") final List<Class> paramClass, final Object... params) {
         log("[START] (" + clazz + ", " + methodName + ", " + paramClass + ", " + params + ")", this.getClass());
         final Thread parentThread = Thread.currentThread();
         new Thread(new Runnable() {
             public void run() {
                 try {
                     Method method = Class.forName(clazz).getMethod(methodName, paramClass.toArray(new Class<?>[paramClass.size()]));
-                    Object invoke = method.invoke(null, params);
-                    log("[RESULT] (" + invoke + ")", this.getClass());
+                    method.invoke(null, params);
 
                 } catch (NoSuchMethodException e) {
                     throw new LegacyJavaAsyncException(e, parentThread, Thread.currentThread());
@@ -127,7 +140,7 @@ public class LegacyJavaAsyncExecutor implements AsyncExecutor {
                     throw new LegacyJavaAsyncException(e, parentThread, Thread.currentThread());
 
                 } catch (InvocationTargetException e) {
-                    throw new LegacyJavaAsyncException(e, parentThread, Thread.currentThread());
+                    handleThreadExcpetion(parentThread, e);
 
                 } catch (ClassNotFoundException e) {
                     throw new LegacyJavaAsyncException(e, parentThread, Thread.currentThread());
@@ -135,6 +148,16 @@ public class LegacyJavaAsyncExecutor implements AsyncExecutor {
             }
         }).start();
 
-        log("[END] (" + clazz + methodName + ", " + paramClass + ", " + params + ")", this.getClass());
+        log("[END] (" + clazz + methodName + ", " + paramClass + ", " + Arrays.toString(params) + ")", this.getClass());
+    }
+
+    /**
+     * Handles common Thread exceptions
+     *
+     * @param parentThread Parent thread
+     * @param e            Exepcion
+     */
+    private void handleThreadExcpetion(Thread parentThread, Exception e) {
+        throw new LegacyJavaAsyncException(e, parentThread, Thread.currentThread());
     }
 }
