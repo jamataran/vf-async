@@ -16,10 +16,27 @@ import es.autowired.async.exception.LegacyJavaAsyncException;
  */
 public class LegacyJavaAsyncExecutor implements AsyncExecutor {
 
-    private final Set<Thread> threads;
+    private static volatile LegacyJavaAsyncExecutor instance;
 
-    public LegacyJavaAsyncExecutor() {
-        threads = new HashSet<Thread>();
+    /**
+     * Instantiation is forbidden
+     */
+    private LegacyJavaAsyncExecutor() {
+    }
+
+    /**
+     * Gets an unique instance of {@link LegacyJavaAsyncExecutor} (singleton)
+     *
+     * @return Instance
+     */
+    public static LegacyJavaAsyncExecutor getInstance() {
+        if (instance == null) {
+            synchronized (LegacyJavaAsyncExecutor.class) {
+                if (instance == null)
+                    instance = new LegacyJavaAsyncExecutor();
+            }
+        }
+        return instance;
     }
 
     /**
