@@ -12,26 +12,26 @@ public class LegacyJavaAsyncExecutor implements AsyncExecutor {
     private final Set<Thread> threads;
 
     public LegacyJavaAsyncExecutor() {
-        threads = new HashSet<>();
+        threads = new HashSet<Thread>();
     }
 
-    @Override
-    public void executeAync(Thread parentThread, Object o, Method method, Object... params) {
+    public void executeAync(Thread parentThread, final Object o, final Method method, final Object... params) {
         CommonHelper.log("[START] (" + parentThread + ", " + method + ", " + params + ")", this.getClass());
-        new Thread(() -> {
-            try {
-                method.invoke(o, params);
-            } catch (IllegalAccessException e) {
-                CommonHelper.log("ERROR\t" + e.getMessage(), this.getClass());
-            } catch (InvocationTargetException e) {
-                CommonHelper.log("ERROR\t" + e.getMessage(), this.getClass());
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    method.invoke(o, params);
+                } catch (IllegalAccessException e) {
+                    CommonHelper.log("ERROR\t" + e.getMessage(), LegacyJavaAsyncExecutor.this.getClass());
+                } catch (InvocationTargetException e) {
+                    CommonHelper.log("ERROR\t" + e.getMessage(), LegacyJavaAsyncExecutor.this.getClass());
+                }
             }
         }).start();
 
         CommonHelper.log("[END] (" + parentThread + ", " + method + ", " + params + ")", this.getClass());
     }
 
-    @Override
     public void executeAync(Thread parentThread, Method method, Object... params) {
         this.executeAync(parentThread,this,method,params);
     }

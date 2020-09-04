@@ -1,18 +1,18 @@
 package es.autowired.service;
 
-import java.util.Optional;
+import static es.autowired.common.CommonHelper.log;
+
 import java.util.UUID;
 
 import es.autowired.async.AsyncExecutor;
 import es.autowired.async.LegacyJavaAsyncExecutor;
-import es.autowired.common.CommonHelper;
 
 public class ServiceImpl implements Service {
-    @Override
-    public Optional<String> retard(int retard) {
+
+    public String retard(int retard) {
 
         try {
-            CommonHelper.log("INVOCACION (Comienza parada) => retard(" + retard + ")", this.getClass());
+            log("INVOCACION (Comienza parada) => retard(" + retard + ")", this.getClass());
             Thread.sleep(retard);
             Service nextInstance = new ServiceImpl();
             AsyncExecutor asyncExecutor = new LegacyJavaAsyncExecutor();
@@ -22,20 +22,25 @@ public class ServiceImpl implements Service {
                 e.printStackTrace();
             }
 
-            CommonHelper.log("FIN (Fin parada) => retard(" + retard + ")", this.getClass());
+            new Thread(new Runnable() {
+                public void run() {
+                    log("HOLA", ServiceImpl.this.getClass());
+                }
+            }).start();
+
+            log("FIN (Fin parada) => retard(" + retard + ")", this.getClass());
         } catch (InterruptedException e) {
             System.err.println("Error\t" + e.getMessage());
         }
-        return Optional.of("retard\t" + UUID.randomUUID().toString());
+        return "retard\t" + UUID.randomUUID().toString();
     }
 
-    @Override
-    public Optional<String> retard2(int retard) {
+    public String retard2(int retard) {
         try {
             Thread.sleep(retard);
         } catch (InterruptedException e) {
             System.err.println("Error\t" + e.getMessage());
         }
-        return Optional.of("retard2" + UUID.randomUUID().toString());
+        return "retard2" + UUID.randomUUID().toString();
     }
 }
