@@ -1,4 +1,4 @@
-package es.autowired.provider.arch.exception;
+package es.autowired.async.exception;
 
 public class LegacyJavaAsyncException extends RuntimeException {
     private static final long serialVersionUID = -3319667002414187728L;

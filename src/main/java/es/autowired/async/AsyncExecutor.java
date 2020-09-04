@@ -13,5 +13,4 @@ public interface AsyncExecutor {
 
     void executeAsyncStatic(final String clazz, final String methodName, final List<Class> paramClass, final Object... params);
 
-
 }
