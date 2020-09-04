@@ -7,6 +7,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import es.autowired.async.AsyncExecutor;
+import es.autowired.provider.arch.exception.LegacyJavaAsyncException;
 
 /**
  * Executes {@link Method} asynchronously
@@ -58,9 +59,9 @@ public class LegacyJavaAsyncExecutor implements AsyncExecutor {
                     method.invoke(o, params);
                     log("Invocation finished. Closing thread " + Thread.currentThread() + ".", LegacyJavaAsyncExecutor.this.getClass());
                 } catch (IllegalAccessException e) {
-                    log("ERROR\t" + e.getMessage(), LegacyJavaAsyncExecutor.this.getClass());
+                    throw new LegacyJavaAsyncException(e, parentThread, Thread.currentThread());
                 } catch (InvocationTargetException e) {
-                    log("ERROR\t" + e.getMessage(), LegacyJavaAsyncExecutor.this.getClass());
+                    throw new LegacyJavaAsyncException(e, parentThread, Thread.currentThread());
                 }
             }
         }).start();
@@ -78,6 +79,7 @@ public class LegacyJavaAsyncExecutor implements AsyncExecutor {
     @Override
     public void executeAsyncStatic(Method method, Object... params) {
         log("[START] (" + method + ", " + params + ")", this.getClass());
+        final Thread parentThread = Thread.currentThread();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -85,9 +87,9 @@ public class LegacyJavaAsyncExecutor implements AsyncExecutor {
                     Object invoke = method.invoke(null, params);
                     log("[RESULT] (" + invoke + ")", this.getClass());
                 } catch (IllegalAccessException e) {
-                    log("ERROR\t" + e.getMessage(), LegacyJavaAsyncExecutor.this.getClass());
+                    throw new LegacyJavaAsyncException(e, parentThread, Thread.currentThread());
                 } catch (InvocationTargetException e) {
-                    log("ERROR\t" + e.getMessage(), LegacyJavaAsyncExecutor.this.getClass());
+                    throw new LegacyJavaAsyncException(e, parentThread, Thread.currentThread());
                 }
             }
         }).start();
@@ -106,6 +108,7 @@ public class LegacyJavaAsyncExecutor implements AsyncExecutor {
     @Override
     public void executeAsyncStaticWithMethodName(String clazz, String methodName, List<Object> paramClass, Object... params) {
         log("[START] (" + clazz + ", " + methodName + ", " + paramClass + ", " + params + ")", this.getClass());
+        final Thread parentThread = Thread.currentThread();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -114,13 +117,13 @@ public class LegacyJavaAsyncExecutor implements AsyncExecutor {
                     Object invoke = method.invoke(null, params);
                     log("[RESULT] (" + invoke + ")", this.getClass());
                 } catch (NoSuchMethodException e) {
-                    log("ERROR\t" + e.getMessage(), LegacyJavaAsyncExecutor.this.getClass());
+                    throw new LegacyJavaAsyncException(e, parentThread, Thread.currentThread());
                 } catch (IllegalAccessException e) {
-                    log("ERROR\t" + e.getMessage(), LegacyJavaAsyncExecutor.this.getClass());
+                    throw new LegacyJavaAsyncException(e, parentThread, Thread.currentThread());
                 } catch (InvocationTargetException e) {
-                    log("ERROR\t" + e.getMessage(), LegacyJavaAsyncExecutor.this.getClass());
+                    throw new LegacyJavaAsyncException(e, parentThread, Thread.currentThread());
                 } catch (ClassNotFoundException e) {
-                    log("ERROR\t" + e.getMessage(), LegacyJavaAsyncExecutor.this.getClass());
+                    throw new LegacyJavaAsyncException(e, parentThread, Thread.currentThread());
                 }
             }
         }).start();
@@ -142,13 +145,13 @@ public class LegacyJavaAsyncExecutor implements AsyncExecutor {
             final Object instance = declaringClass.getDeclaredConstructor().newInstance();
             this.executeAsyncNonStatic(parentThread, instance, method, params);
         } catch (InstantiationException e) {
-            log("ERROR\t" + e.getMessage(), LegacyJavaAsyncExecutor.this.getClass());
+            throw new LegacyJavaAsyncException(e, parentThread, Thread.currentThread());
         } catch (IllegalAccessException e) {
-            log("ERROR\t" + e.getMessage(), LegacyJavaAsyncExecutor.this.getClass());
+            throw new LegacyJavaAsyncException(e, parentThread, Thread.currentThread());
         } catch (InvocationTargetException e) {
-            log("ERROR\t" + e.getMessage(), LegacyJavaAsyncExecutor.this.getClass());
+            throw new LegacyJavaAsyncException(e, parentThread, Thread.currentThread());
         } catch (NoSuchMethodException e) {
-            log("ERROR\t" + e.getMessage(), LegacyJavaAsyncExecutor.this.getClass());
+            throw new LegacyJavaAsyncException(e, parentThread, Thread.currentThread());
         }
     }
 }
