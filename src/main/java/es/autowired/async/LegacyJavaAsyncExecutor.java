@@ -19,6 +19,14 @@ public class LegacyJavaAsyncExecutor implements AsyncExecutor {
         threads = new HashSet<Thread>();
     }
 
+    /**
+     * Execute asynchronously the method received by parameter
+     *
+     * @param parentThread Parent thread
+     * @param o            Instance of method class
+     * @param method       Method to execute
+     * @param params       Params to execute the method
+     */
     public void executeAsync(final Thread parentThread, final Object o, final Method method, final Object... params) {
         CommonHelper.log("[START] (" + parentThread + ", " + method + ", " + params + ")", this.getClass());
         new Thread(new Runnable() {
@@ -38,10 +46,23 @@ public class LegacyJavaAsyncExecutor implements AsyncExecutor {
         CommonHelper.log("[END] (" + parentThread + ", " + method + ", " + params + ")", this.getClass());
     }
 
+    /**
+     * Execute asynchronously the method received by parameter
+     *
+     * @param parentThread Parent thread
+     * @param method       Method to execute
+     * @param params       Params to execute the method
+     */
     public void executeAsync(Thread parentThread, Method method, Object... params) {
         this.executeAsync(parentThread, this, method, params);
     }
 
+    /**
+     * Execute asynchronously the method received by parameter
+     *
+     * @param method Method to execute
+     * @param params Params to execute the method
+     */
     public void executeAsyncStatic(final Method method, final Object... params) {
         log("[START] (" + method + ", " + params + ")", this.getClass());
         final Thread parentThread = Thread.currentThread();
@@ -61,7 +82,14 @@ public class LegacyJavaAsyncExecutor implements AsyncExecutor {
         log("[END] (" + method + ", " + params + ")", this.getClass());
     }
 
-
+    /**
+     * Execute asynchronously the method received by parameter
+     *
+     * @param clazz      Classname of the method
+     * @param methodName Name of the method to execute
+     * @param paramClass Params type of the method
+     * @param params     Params to execute the method
+     */
     public void executeAsyncStatic(final String clazz, final String methodName, final List<Class> paramClass, final Object... params) {
         log("[START] (" + clazz + ", " + methodName + ", " + paramClass + ", " + params + ")", this.getClass());
         final Thread parentThread = Thread.currentThread();
