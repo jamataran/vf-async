@@ -2,10 +2,8 @@ package es.autowired.service;
 
 public interface Service {
 
-    void sendFTP(String fileName);
+    String retard(int retard);
 
-    void callSOAPService(String url);
-
-    void mainLogic(int callType);
+    String retard2(int retard);
 
 }
