@@ -1,5 +1,6 @@
 package es.autowired.service;
 
+<<<<<<< HEAD
 
 import static es.autowired.common.CommonHelper.log;
 
@@ -8,11 +9,24 @@ import java.util.LinkedList;
 import java.util.List;
 
 import es.autowired.async.AsyncExecutor;
+=======
+import static es.autowired.common.CommonHelper.log;
+
+import java.util.UUID;
+
+import es.autowired.async.AsyncExecutor;
+import es.autowired.async.LegacyJavaAsyncExecutor;
+>>>>>>> upstream/development
 
 /**
  * Simulates business logic.
  */
 public class ServiceImpl implements Service {
+<<<<<<< HEAD
+=======
+
+    public String retard(int retard) {
+>>>>>>> upstream/development
 
     public static final int RETARDO_FTP = 12000;
     public static final int RETARDO_SOAP = 1200;
@@ -28,8 +42,15 @@ public class ServiceImpl implements Service {
     public void sendFTP(String fileName) {
         log("Enviando " + fileName + " por FTP", this.getClass());
         try {
+<<<<<<< HEAD
             Thread.sleep(RETARDO_FTP);
             log(fileName + " enviado. Comunicando por WS...", this.getClass());
+=======
+            log("INVOCACION (Comienza parada) => retard(" + retard + ")", this.getClass());
+            Thread.sleep(retard);
+            Service nextInstance = new ServiceImpl();
+            AsyncExecutor asyncExecutor = new LegacyJavaAsyncExecutor();
+>>>>>>> upstream/development
             try {
                 this.asyncExecutor.executeAsyncNonStatic(Thread.currentThread(), this, ServiceImpl.class.getMethod("sendFTP", String.class), fileName);
             } catch (NoSuchMethodException e) {
@@ -38,15 +59,32 @@ public class ServiceImpl implements Service {
             log(fileName + " FTP Procesado correctamente (Enviado y comunicado)", this.getClass());
 
 
+<<<<<<< HEAD
+=======
+            new Thread(new Runnable() {
+                public void run() {
+                    log("HOLA", ServiceImpl.this.getClass());
+                }
+            }).start();
+
+            log("FIN (Fin parada) => retard(" + retard + ")", this.getClass());
+>>>>>>> upstream/development
         } catch (InterruptedException e) {
             logException(e);
         }
+<<<<<<< HEAD
 
     }
 
     @Override
     public void callSOAPService(String url) {
         log("Llamando a " + url + "[SOAP]", this.getClass());
+=======
+        return "retard\t" + UUID.randomUUID().toString();
+    }
+
+    public String retard2(int retard) {
+>>>>>>> upstream/development
         try {
             Thread.sleep(RETARDO_SOAP);
             log(url + "[SOAP COMPLETED]", this.getClass());
@@ -129,11 +167,15 @@ public class ServiceImpl implements Service {
                 log("Peticiones estaticas con nombre de metodo lanzadas...", this.getClass());
                 break;
         }
+<<<<<<< HEAD
 
         log("\uD83C\uDF89 Fin del proceso. Hilo principal disponible de nuevo!", this.getClass());
     }
 
     private void logException(Exception e) {
         log("ERROR\t" + e.getMessage(), this.getClass());
+=======
+        return "retard2" + UUID.randomUUID().toString();
+>>>>>>> upstream/development
     }
 }
