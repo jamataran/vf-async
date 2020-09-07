@@ -43,4 +43,13 @@ public class ServiceImpl implements Service {
         }
         return "retard2" + UUID.randomUUID().toString();
     }
+
+    public static String retard3(int retard) {
+        try {
+            Thread.sleep(retard);
+        } catch (InterruptedException e) {
+            System.err.println("Error\t" + e.getMessage());
+        }
+        return "retard3" + UUID.randomUUID().toString();
+    }
 }
