@@ -1,6 +1,6 @@
 package es.autowired.async.exception;
 
-public class LegacyJavaAsyncException extends RuntimeException {
+public class AsyncExecutorException extends RuntimeException {
     private static final long serialVersionUID = -3319667002414187728L;
 
     private final Thread parentThread;
@@ -16,9 +16,9 @@ public class LegacyJavaAsyncException extends RuntimeException {
      * @param parentThread Parent of thread exception
      * @param asyncThread  Thread of exception
      */
-    public LegacyJavaAsyncException(Throwable exception,
-                                    Thread parentThread,
-                                    Thread asyncThread) {
+    public AsyncExecutorException(Throwable exception,
+                                  Thread parentThread,
+                                  Thread asyncThread) {
         super(getMessage(exception, parentThread, asyncThread));
         this.parentThread = parentThread;
         this.asyncThread = asyncThread;

@@ -6,4 +6,6 @@ public interface Service {
 
     String retard2(int retard);
 
+    void run();
+
 }
