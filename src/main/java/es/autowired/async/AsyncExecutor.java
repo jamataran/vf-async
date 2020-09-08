@@ -16,4 +16,12 @@ public interface AsyncExecutor {
 
     void executeAsyncStatic(final String clazz, final String methodName, final List<Class> paramClass, final Object... params);
 
+    void executeAsync(Integer retriesNumber, final Thread parentThread, final Object o, final Method method, final Object... params);
+
+    void executeAsync(Integer retriesNumber,final Thread parentThread, final Method method, final Object... params) throws NoSuchMethodException;
+
+    void executeAsyncStatic(Integer retriesNumber,final Method method, final Object... params);
+
+    void executeAsyncStatic(Integer retriesNumber,final String clazz, final String methodName, final List<Class> paramClass, final Object... params);
+
 }
