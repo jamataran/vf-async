@@ -185,13 +185,6 @@ public class LegacyJavaAsyncExecutor implements AsyncExecutor {
                             if (++retry == retriesNumber) throw ge;
                         }
                     }
-
-                } catch (IllegalAccessException e) {
-                    throw new AsyncExecutorException(e, parentThread, Thread.currentThread());
-
-                } catch (InvocationTargetException e) {
-                    handleThreadExcpetion(parentThread, e);
-                    return;
                 } catch (Exception e) {
                     handleThreadExcpetion(parentThread, e);
                 }
@@ -251,13 +244,6 @@ public class LegacyJavaAsyncExecutor implements AsyncExecutor {
                             if (++retry == retriesNumber) throw ge;
                         }
                     }
-
-                } catch (IllegalAccessException e) {
-                    throw new AsyncExecutorException(e, parentThread, Thread.currentThread());
-                } catch (InvocationTargetException e) {
-                    handleThreadExcpetion(parentThread, e);
-                } catch (RuntimeException e) {
-                    handleThreadExcpetion(parentThread, e);
                 } catch (Exception e) {
                     handleThreadExcpetion(parentThread, e);
                 }
@@ -293,21 +279,6 @@ public class LegacyJavaAsyncExecutor implements AsyncExecutor {
                             if (++retry == retriesNumber) throw ge;
                         }
                     }
-
-                } catch (NoSuchMethodException e) {
-                    throw new AsyncExecutorException(e, parentThread, Thread.currentThread());
-
-                } catch (IllegalAccessException e) {
-                    throw new AsyncExecutorException(e, parentThread, Thread.currentThread());
-
-                } catch (InvocationTargetException e) {
-                    handleThreadExcpetion(parentThread, e);
-
-                } catch (RuntimeException e) {
-                    handleThreadExcpetion(parentThread, e);
-
-                } catch (ClassNotFoundException e) {
-                    throw new AsyncExecutorException(e, parentThread, Thread.currentThread());
                 } catch (Exception e) {
                     handleThreadExcpetion(parentThread, e);
                 }
