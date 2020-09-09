@@ -15,6 +15,7 @@ import es.autowired.common.CommonHelper;
  */
 public class LegacyJavaAsyncExecutor implements AsyncExecutor {
 
+    private static final int MAXIMUM_PERCENTAGE = 75;
     private static volatile LegacyJavaAsyncExecutor instance;
 
     /**
@@ -48,6 +49,7 @@ public class LegacyJavaAsyncExecutor implements AsyncExecutor {
      */
     public void executeAsync(final Thread parentThread, final Object o, final Method method, final Object... params) {
         CommonHelper.log("[START] (" + parentThread + ", " + method + ", " + Arrays.toString(params) + ")", this.getClass());
+        recommendedThreadCount();
         new Thread(new Runnable() {
             public void run() {
                 try {
@@ -104,6 +106,7 @@ public class LegacyJavaAsyncExecutor implements AsyncExecutor {
      */
     public void executeAsyncStatic(final Method method, final Object... params) {
         log("[START] (" + method + ", " + Arrays.toString(params) + ")", this.getClass());
+        recommendedThreadCount();
         final Thread parentThread = Thread.currentThread();
         new Thread(new Runnable() {
             public void run() {
@@ -133,6 +136,7 @@ public class LegacyJavaAsyncExecutor implements AsyncExecutor {
      */
     public void executeAsyncStatic(final String clazz, final String methodName, @SuppressWarnings("rawtypes") final List<Class> paramClass, final Object... params) {
         log("[START] (" + clazz + ", " + methodName + ", " + paramClass + ", " + params + ")", this.getClass());
+        recommendedThreadCount();
         final Thread parentThread = Thread.currentThread();
         new Thread(new Runnable() {
             public void run() {
@@ -172,12 +176,13 @@ public class LegacyJavaAsyncExecutor implements AsyncExecutor {
      */
     public void executeAsync(final Integer retriesNumber, final Thread parentThread, final Object o, final Method method, final Object... params) {
         CommonHelper.log("[START] (" + parentThread + ", " + method + ", " + Arrays.toString(params) + ")", this.getClass());
+        recommendedThreadCount();
         new Thread(new Runnable() {
             public void run() {
                 try {
 
                     int retry = 0;
-                    while(true){
+                    while (true) {
                         try {
                             method.invoke(o, params);
                             break;
@@ -230,13 +235,14 @@ public class LegacyJavaAsyncExecutor implements AsyncExecutor {
      */
     public void executeAsyncStatic(final Integer retriesNumber, final Method method, final Object... params) {
         log("[START] (" + method + ", " + Arrays.toString(params) + ")", this.getClass());
+        recommendedThreadCount();
         final Thread parentThread = Thread.currentThread();
         new Thread(new Runnable() {
             public void run() {
                 try {
 
                     int retry = 0;
-                    while(true){
+                    while (true) {
                         try {
                             method.invoke(null, params);
                             break;
@@ -264,6 +270,7 @@ public class LegacyJavaAsyncExecutor implements AsyncExecutor {
      */
     public void executeAsyncStatic(final Integer retriesNumber, final String clazz, final String methodName, @SuppressWarnings("rawtypes") final List<Class> paramClass, final Object... params) {
         log("[START] (" + clazz + ", " + methodName + ", " + paramClass + ", " + params + ")", this.getClass());
+        recommendedThreadCount();
         final Thread parentThread = Thread.currentThread();
         new Thread(new Runnable() {
             public void run() {
@@ -271,7 +278,7 @@ public class LegacyJavaAsyncExecutor implements AsyncExecutor {
                     Method method = Class.forName(clazz).getMethod(methodName, paramClass.toArray(new Class<?>[paramClass.size()]));
 
                     int retry = 0;
-                    while(true){
+                    while (true) {
                         try {
                             method.invoke(null, params);
                             break;
@@ -298,5 +305,13 @@ public class LegacyJavaAsyncExecutor implements AsyncExecutor {
      */
     private void handleThreadExcpetion(Thread parentThread, Exception e) {
         throw new AsyncExecutorException(e, parentThread, Thread.currentThread());
+    }
+
+    private static void recommendedThreadCount() {
+        int availableProcessors = Runtime.getRuntime().availableProcessors();
+        int percentage = (availableProcessors * MAXIMUM_PERCENTAGE) / 100;
+
+        if (Thread.activeCount() > percentage)
+            log("[WARN] (75% OF THE THREADS THAT CAN BE CREATED HAVE BEEN EXCEEDED)", LegacyJavaAsyncExecutor.class);
     }
 }
